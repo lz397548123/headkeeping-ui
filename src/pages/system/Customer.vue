@@ -3,10 +3,10 @@
     <el-button type="primary" size="small" @click="toAdd">添加</el-button>
     <!-- 表格 -->
     <el-table size="small" :data="customers">
-      <el-table-column prop="id" label="编号"/>
-      <el-table-column prop="realname" label="用户名"/>
-      <el-table-column prop="telephone" label="手机号"/>
-      <el-table-column prop="status" label="状态"/>
+      <el-table-column prop="id" label="编号" />
+      <el-table-column prop="realname" label="用户名" />
+      <el-table-column prop="telephone" label="手机号" />
+      <el-table-column prop="status" label="状态" />
       <el-table-column fixed="right" label="操作">
         <template slot-scope="scope">
           <el-button type="danger" size="mini" @click="del(scope.row.id)">删除</el-button>
@@ -19,7 +19,7 @@
     <el-dialog title="用户" :visible.sync="visable">
       <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户名" prop="realname">
-          <el-input v-model="form.realname" clearable placeholder="请输入用户名"/>
+          <el-input v-model="form.realname" clearable placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="手机号" prop="telephone">
           <el-input
@@ -31,12 +31,12 @@
           />
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" clearable placeholder="请输入密码" show-password/>
+          <el-input v-model="form.password" clearable placeholder="请输入密码" show-password />
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-select v-model="form.status" placeholder="请输入状态">
-            <el-option label="禁用" value="禁用"/>
-            <el-option label="启用" value="启用"/>
+            <el-option label="禁用" value="禁用" />
+            <el-option label="启用" value="启用" />
           </el-select>
         </el-form-item>
       </el-form>

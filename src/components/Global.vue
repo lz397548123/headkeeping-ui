@@ -2,7 +2,7 @@
 <script>
 // 线上接口地址
 const baseUrl = 'http://localhost:8888'
-const uploadUrl = 'http://localhost:8899'
+const uploadUrl = 'http://39.102.43.224:5588'
 export default {
   baseUrl,
   uploadUrl
