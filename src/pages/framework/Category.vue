@@ -4,7 +4,7 @@
     <div class="btns">
       <el-button type="primary" size="small" @click="toAdd">添加</el-button>
     </div>
-    <!-- 表格 -->
+    <!-- 表格  -->
     <el-table :data="categories" row-key="id" size="small" :tree-props="{children: 'children'}">
       <el-table-column prop="name" label="栏目名称" width="120"></el-table-column>
       <el-table-column prop="nu" label="序号"></el-table-column>
