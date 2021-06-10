@@ -78,14 +78,73 @@ export const constantRoutes = [
   },
 
   {
-    path: '/form',
+    path: '/system',
     component: Layout,
+    redirect: '/system/customer',
+    name: 'system',
+    meta: { title: '系统设置', icon: 'table' },
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: 'customer',
+        name: 'customer',
+        component: () => import('@/pages/system/Customer'),
+        meta: { title: '用户管理' }
+      },
+      {
+        path: 'role',
+        name: 'role',
+        component: () => import('@/pages/system/Role'),
+        meta: { title: '角色管理' }
+      },
+      {
+        path: 'privilege',
+        name: 'privilege',
+        component: () => import('@/pages/system/Privilege'),
+        meta: { title: '权限管理' }
+      }
+    ]
+  },
+
+  {
+    path: '/check',
+    component: Layout,
+    redirect: '/check/employee',
+    name: 'check',
+    meta: { title: '审核大厅', icon: 'eye' },
+    children: [
+      {
+        path: 'employee',
+        name: 'employee',
+        component: () => import('@/pages/check/Employee'),
+        meta: { title: '员工审核' }
+      },
+      {
+        path: 'commont',
+        name: 'commont',
+        component: () => import('@/pages/check/Comment'),
+        meta: { title: '评论审核' }
+      },
+      {
+        path: 'withdraw',
+        name: 'withdraw',
+        component: () => import('@/pages/check/Withdraw'),
+        meta: { title: '提现审核' }
+      }
+    ]
+  },
+
+  {
+    path: '/order',
+    component: Layout,
+    redirect: '/order/list',
+    name: 'order',
+    meta: { title: '订单管理', icon: 'tree' },
+    children: [
+      {
+        path: 'list',
+        name: 'list',
+        component: () => import('@/pages/order/List'),
+        meta: { title: '订单管理' }
       }
     ]
   },
