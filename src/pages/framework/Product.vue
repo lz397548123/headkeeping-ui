@@ -29,15 +29,36 @@
         </el-form-item>
         <el-form-item label="所属栏目">
           <!--{{categories}}-->
-          <el-select v-model="form.categoryId">
+          <!--<el-select v-model="form.categoryId">
             <el-option v-for="c in categories" :key="c.id" :label="c.name" :value="c.id"></el-option>
-          </el-select>
+          </el-select>-->
+          <el-cascader
+            v-model="form.categoryId"
+            :options="categories"
+            :props="{ label:'name',value:'id',checkStrictly: true,emitPath:false }"
+            clearable
+          >
+          </el-cascader>
         </el-form-item>
         <el-form-item label="产品单价">
           <el-input v-model="form.price"></el-input>
         </el-form-item>
         <el-form-item label="产品介绍">
           <el-input v-model="form.introduce" type="textarea"></el-input>
+        </el-form-item>
+        <el-form-item label="图片">
+          <el-upload
+            class="upload-demo"
+            :multiple="false"
+            :limit="1"
+            :on-success="uploadSuccessHandler"
+            :on-error="uploadErrorHandler"
+            :action="uploadImgPath"
+            list-type="picture"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -69,6 +90,19 @@ export default {
     this.loadCategories()
   },
   methods: {
+    uploadImgPath() {
+      return this.uploadUrl + '/file/upload'
+    },
+    uploadSuccessHandler(response) {
+      // console.log(response);
+      const photo = response.data.groupname + '/' + response.data.id
+      // this.form.photo = photo;
+      this.form = { ...this.form, photo }
+    },
+    // eslint-disable-next-line handle-callback-err
+    uploadErrorHandler(error) {
+      this.$message({ type: 'error', message: '上传失败' })
+    },
     // 提交
     submit() {
       const url = this.baseUrl + '/product/saveOrUpdate'
@@ -93,7 +127,7 @@ export default {
       // 打开模态框
       this.visible = true
     },
-    del: function(row) {
+    del(row) {
       this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -120,8 +154,8 @@ export default {
     },
     // 加载栏目数据
     loadCategories() {
-      // const url = 'http://localhost:8888/category/findAll'
-      const url = this.baseUrl + '/category/findAll'
+      // const url = 'http://localhost:8888/category/findAllWithChild'
+      const url = this.baseUrl + '/category/findAllWithChild'
       get(url).then((response) => {
         this.categories = response.data
       })

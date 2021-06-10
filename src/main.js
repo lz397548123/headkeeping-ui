@@ -39,6 +39,7 @@ Vue.use(ElementUI, { locale })
 Vue.config.productionTip = false
 
 Vue.prototype.baseUrl = global.baseUrl
+Vue.prototype.uploadUrl = global.uploadUrl
 
 new Vue({
   el: '#app',
