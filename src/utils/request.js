@@ -92,11 +92,11 @@ export function del(url, params) {
 
 // 自定义post
 export function post(url, data) {
-  return service.post(url, qs.stringify(data), {
+  return service.post(url, JSON.stringify(data), {
     timeout: 10000,
     headers: {
       'X-Requested-With': 'XMLHttpRequest',
-      'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      'Content-Type': 'application/json; charset=UTF-8'
     }
   })
 }

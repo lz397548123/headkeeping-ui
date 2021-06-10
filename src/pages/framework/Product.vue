@@ -7,14 +7,14 @@
     <!-- /按钮 -->
     <!-- 表格 -->
     <el-table size="small" :data="products">
-      <el-table-column label="编号" type="index" :index="1"/>
-      <el-table-column label="名称" prop="name"/>
-      <el-table-column label="单价" prop="price"/>
-      <el-table-column label="介绍" prop="introduce"/>
-      <el-table-column label="所属分类" prop="category.name"/>
+      <el-table-column label="编号" type="index" :index="1"></el-table-column>
+      <el-table-column label="名称" prop="name"></el-table-column>
+      <el-table-column label="单价" prop="price"></el-table-column>
+      <el-table-column label="介绍" prop="introduce"></el-table-column>
+      <el-table-column label="所属分类" prop="category.name"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="danger" @click="delete(scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="del(scope.row)">删除</el-button>
           <el-button size="mini" type="primary" @click="edit(scope.row)">修改</el-button>
         </template>
       </el-table-column>
@@ -42,7 +42,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="visible=false" size="small">取 消</el-button>
-        <el-button type="primary" @click="visible=submit" size="small">确 定</el-button>
+        <el-button type="primary" @click="submit" size="small">确 定</el-button>
       </span>
     </el-dialog>
     <!-- /模态框 -->
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import request from '@/utils/request'
+import { get, post } from '@/utils/request'
 
 export default {
   data() {
@@ -71,30 +71,58 @@ export default {
   methods: {
     // 提交
     submit() {
-
+      const url = this.baseUrl + '/product/saveOrUpdate'
+      post(url, this.form).then((response) => {
+        // 提示
+        this.$message({ type: 'success', message: response.message })
+        // 关闭模态框
+        this.visible = false
+        // 刷新数据
+        this.loadProducts()
+      })
     },
     toAdd() {
+      // 重置form
+      this.form = {}
+      // 打开模态框
       this.visible = true
     },
     edit(row) {
-
+      // 将当前行信息进行绑定
+      this.form = row
+      // 打开模态框
+      this.visible = true
     },
-    delete(row) {
-
+    del: function(row) {
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // 删除
+        console.log(row.id)
+        const url = this.baseUrl + '/product/deleteById'
+        get(url, { id: row.id }).then((response) => {
+          // 提示
+          this.$message({ type: 'success', message: response.message })
+          // 刷新数据
+          this.loadProducts()
+        })
+      })
     },
     // 加载产品数据
     loadProducts() {
-      // const url = 'http://39.102.43.224:8888/product/findAllWithCategory'
+      // const url = 'http://localhost:8888/product/findAllWithCategory'
       const url = this.baseUrl + '/product/findAllWithCategory'
-      request.get(url).then((response) => {
+      get(url).then((response) => {
         this.products = response.data
       })
     },
     // 加载栏目数据
     loadCategories() {
-      // const url = 'http://39.102.43.224:8888/category/findAll'
+      // const url = 'http://localhost:8888/category/findAll'
       const url = this.baseUrl + '/category/findAll'
-      request.get(url).then((response) => {
+      get(url).then((response) => {
         this.categories = response.data
       })
     }

@@ -15,6 +15,7 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+// import 'default-passive-events'
 import global from './components/Global'
 
 /**
