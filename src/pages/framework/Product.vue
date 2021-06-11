@@ -8,9 +8,18 @@
     <!-- 表格 -->
     <el-table size="small" :data="products">
       <el-table-column label="编号" type="index" :index="1"></el-table-column>
+      <!--<el-table-column label="图片" width="80">-->
+      <!--  <template v-slot="scope">-->
+      <!--    <img style="width:50px; height:50px; border-radius:3px" :src="'http://localhost:8888/'+scope.row.photo">-->
+      <!--  </template>-->
+      <!--</el-table-column>-->
       <el-table-column label="图片" width="80">
         <template v-slot="scope">
-          <img style="width:50px; height:50px; border-radius:3px" :src="'http://localhost:8888/'+scope.row.photo">
+          <img
+            style="width:50px; height:50px; border-radius:3px"
+            :src="'http://121.199.29.84:8888/'+scope.row.photo"
+            alt
+          />
         </template>
       </el-table-column>
       <el-table-column label="名称" prop="name"></el-table-column>
@@ -51,19 +60,19 @@
         <el-form-item label="产品介绍">
           <el-input v-model="form.introduce" type="textarea"></el-input>
         </el-form-item>
-        <el-form-item label="图片">
-          <!--<el-upload-->
-          <!--  class="upload-demo"-->
-          <!--  :multiple="false"-->
-          <!--  :limit="1"-->
-          <!--  :on-success="uploadSuccessHandler"-->
-          <!--  :on-error="uploadErrorHandler"-->
-          <!--  action="http://localhost:5588/file/upload"-->
-          <!--  list-type="picture"-->
-          <!--&gt;-->
-          <!--  <el-button size="small" type="primary">点击上传</el-button>-->
-          <!--  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
-          <!--</el-upload>-->
+        <el-form-item label="产品图片：">
+          <el-upload
+            class="upload-demo"
+            :multiple="false"
+            :limit="1"
+            :on-success="uploadSuccessHandler"
+            :on-error="uploadErrorHandler"
+            action="http://121.199.29.84:5588/file/upload"
+            list-type="picture"
+          >
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">

@@ -1,128 +1,205 @@
 <template>
-  <div>
-    <el-button type="primary" size="small" @click="toAdd">添加</el-button>
+  <div class="product">
+    <!-- 按钮 -->
+    <div>
+      <el-button size="small" type="primary" @click="toAdd">新增</el-button>
+    </div>
+    <!-- /按钮 -->
     <!-- 表格 -->
-    <el-table size="small" :data="customers">
-      <el-table-column prop="id" label="编号"/>
-      <el-table-column prop="realname" label="用户名"/>
-      <el-table-column prop="role.name" label="权限"/>
-      <!-- <el-table-column prop="status" label="状态" /> -->
-      <el-table-column fixed="right" label="操作">
-        <template slot-scope="scope">
+    <el-table
+      v-loading="loading"
+      :data="privilegeWithChild"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+      row-key="id"
+      :tree-pops="{children: 'children', hasChildren: 'hasChildren'}"
+    >
+      <el-table-column label="编号" type="index" align="center" :index="1"/>
 
-          <el-button type="primary" size="mini" @click="edit(scope.row)">修改</el-button>
+      <el-table-column label="权限名" prop="name" width="300"/>
+      <el-table-column label="权限类型" prop="type" width="300"/>
+
+      <el-table-column label="操作" width="280">
+        <template slot-scope="scope">
+          <el-button type="text" @click="edit(scope.row)">编辑</el-button>
+          <el-button type="text" @click="del(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    <!-- 表格结束 -->
-    <!-- 模态框 -->
-    <el-dialog title="用户" :visible.sync="visable">
-      <el-form ref="ruleForm" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户名" prop="realname">
-          <el-input v-model="form.realname" clearable placeholder="请输入用户名"/>
-        </el-form-item>
-        <el-form-item label="权限" prop="role.name">
-          <el-select v-model="form.roleId" placeholder="请输入权限">
-            <el-option label="管理员" value="1"/>
-            <el-option label="顾客" value="2"/>
-            <el-option label="员工" value="3"/>
-          </el-select>
-        </el-form-item>
 
-        <el-form-item label="权限" prop="status">
-          <el-select v-model="form.status" placeholder="请输入权限">
-            <el-option label="禁用" value="禁用"/>
-            <el-option label="启用" value="启用"/>
-          </el-select>
+    <!-- 模态框 -->
+    <el-dialog :visible.sync="dialogFormVisible" width="50%" @close="formData={}">
+      <!-- 标题内容 -->
+      <div slot="title" class="dialog-title">
+        <h3>{{ dialogTitle }}</h3>
+      </div>
+      <!-- {{formData}} -->
+      <el-form :mode="formData" label-width="120px">
+        <el-form-item label="权限名称：">
+          <el-input v-model="formData.name" autocomplete="off" clearable/>
+        </el-form-item>
+        <el-form-item label="权限类型：">
+          <el-input v-model="formData.type" autocomplete="off" clearable/>
+        </el-form-item>
+        <el-form-item label="所属权限：">
+          <el-cascader
+            v-model="formData.parentId"
+            placeholder="选择权限"
+            :options="privileges"
+            :props="{ label:'name',value:'id',checkStrictly: true,emitPath:false }"
+            clearable
+          />
+          <!-- <el-select v-model="formData.parentId" placeholder="选择所属栏目">
+            <el-option v-for="c in privileges" :key="c.id" :label="c.name" :value="c.id"></el-option>
+          </el-select>-->
         </el-form-item>
       </el-form>
+      <!-- 底部内容 -->
       <div slot="footer" class="dialog-footer">
-        <el-button @click="close('ruleForm')">取消</el-button>
-        <el-button type="primary" @click="submit('ruleForm')">确定</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="text" @click="submit">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- 模态框结束 -->
   </div>
 </template>
+
 <script>
 import { get, post } from '@/utils/request'
 
 export default {
   data() {
     return {
-      text: '',
-      visable: false,
-      form: {},
-      customers: [],
-      rules: {
-        realname: [
-          { required: true, message: '请输入用户名', trigger: 'blur' }
-        ],
-        telephone: [
-          { required: true, message: '请输入角色', trigger: 'blur' }
-        ],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        status: [{ required: true, message: '请输入状态', trigger: 'change' }]
-      }
+      name: '权限管理',
+      value: 1,
+      privileges: [], // 初始化，权限数据
+      privilegeWithChild: [],
+      dialogTitle: '添加新的权限', // 模态框初始标题
+      dialogFormVisible: false, // 模态框初始状态(不显示)
+      formData: {}, // 模态框数据
+      loading: true // 加载表格数据动画的初始状态
+      // categorys:[],                    // 栏目列表
     }
   },
+  // 表示vue实例创建完毕，开始进行数据渲染
   created() {
-    this.loadCustomers()
+    // 加载权限信息
+    this.loadPrivilegeWithChild()
+    this.loadPrivilege()
   },
+
   methods: {
-    loadCustomers() {
-      const url = this.baseUrl + '/user/findAllWithRole'
-      get(url).then(response => {
-        this.customers = response.data
+    // 加载权限信息
+    loadPrivilegeWithChild() {
+      const url = this.baseUrl + '/privilege/findAllWithChild'
+      get(url).then(res => {
+        if (res.status == 200) {
+          // 为页面数据赋值
+          this.privilegeWithChild = res.data
+          // 关闭加载动画
+          this.loading = false
+        } else {
+          this.$message.error(res.message)
+        }
       })
     },
-    toAdd() {
-      this.form = {}
-      this.visable = true
+
+    // 加载所有级联栏目
+    loadPrivilege() {
+      const url = this.baseUrl + '/privilege/findAll'
+      get(url).then(response => {
+        if (response.status == 200) {
+          // 为页面数据赋值
+          this.privileges = response.data
+        } else {
+          this.$message.error(res.message)
+        }
+      })
     },
-    del(id) {
+
+    // 提交表单
+    submit() {
+      const url = this.baseUrl + '/privilege/saveOrUpdate'
+      // 获取表单数据
+      const data = this.formData
+      // 提交
+      post(url, data).then((res) => {
+        if (res.status == 200) {
+          // 提示信息
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          // 关闭模态框
+          this.dialogFormVisible = false
+          //  加载权限信息
+          this.loadPrivilege()
+          // 清空模态框数据
+          this.formData = {}
+        } else {
+          this.$message.error(res.message)
+        }
+        this.loadPrivilege()
+        this.loadPrivilegeWithChild()
+      })
+    },
+
+    // 点击添加新的权限
+    toAdd() {
+      // 设置模态框标题
+      this.dialogTitle = '添加新的权限'
+      // 清空模态框数据
+      this.formData = {}
+      // 设置模态框可见
+      this.dialogFormVisible = true
+      this.loadPrivilege()
+      this.loadPrivilegeWithChild()
+    },
+
+    // 修改编辑
+    edit(p) {
+      // 设置模态框标题
+      this.dialogTitle = '编辑权限'
+      // 给模态框数据赋值
+      this.formData = Object.assign({}, p)
+      // 设置模态框可见
+      this.dialogFormVisible = true
+    },
+
+    // 删除
+    del(pid) {
       this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         // 删除
-        const url = this.baseUrl + '/user/deleteById'
-        get(url, { id: id }).then(response => {
+        const url = this.baseUrl + '/privilege/deleteById'
+        const data = { id: pid }
+        get(url, data).then(res => {
           // 提示
-          this.$message({ type: 'success', message: response.message })
+          this.$message({ type: 'success', message: res.message })
           // 刷新数据
-          this.loadCustomers()
+          this.loadPrivilege()
+          this.loadPrivilegeWithChild()
         })
       })
     },
-    submit(form) {
-      this.$refs[form].validate(valid => {
-        if (valid) {
-          // 表单验证成功的情况
-          const url = this.baseUrl + '/user/saveOrUpdate'
-          post(url, this.form).then(response => {
-            this.$message({ type: 'success', message: response.message })
-            this.visable = false
-            this.loadCustomers()
-            this.$refs[form].resetFields()
-          })
-        } else {
-          return false
-        }
-      })
+
+    // 上传成功
+    uploadSuccessHandler(res) {
+      // console.log(res);
+      const photo = res.data.groupname + '/' + res.data.id
+      // 下面两个等价
+      // this.formData.photo = photo;
+      // 拿出原有数据，添加新的重新复制。formData的引用地址发生改变
+      this.formData = { ...this.formData, photo }
     },
-    close(form) {
-      this.visable = false
-      this.$refs[form].resetFields()
-    },
-    edit(row) {
-      this.form = row
-      this.visable = true
+
+    // 上传失败
+    uploadErrorHandler(error) {
+      this.$message({ type: 'error', message: '上传失败' })
     }
   }
 }
 </script>
-
-<style>
-</style>

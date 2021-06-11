@@ -2,10 +2,10 @@
   <div class="withdraw">
     <!-- 表格 -->
     <el-table :data="customers">
-      <el-table-column prop="id" label="编号" width="150" />
-      <el-table-column prop="realname" label="用户名" />
-      <el-table-column prop="telephone" label="支付宝号" />
-      <el-table-column prop="balance" label="提现金额" />
+      <el-table-column prop="id" label="编号" width="150"/>
+      <el-table-column prop="realname" label="用户名"/>
+      <el-table-column prop="telephone" label="支付宝号"/>
+      <el-table-column prop="balance" label="提现金额"/>
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <el-button type="primary" size="small" @click="shenhe(scope.row)">审核</el-button>

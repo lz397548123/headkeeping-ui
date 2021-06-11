@@ -8,11 +8,9 @@
       <el-tab-pane label="待服务" name="待服务" />
       <el-tab-pane label="待确认" name="待确认" />
       <el-tab-pane label="已完成" name="已完成" />
-
     </el-tabs>
     <!-- 订单列表 -->
     <el-table :data="orders" size="small">
-
       <!-- 折叠列 -->
       <el-table-column type="expand">
         <template v-slot="scope">
@@ -20,20 +18,17 @@
           <el-table :data="scope.row.orderLines" size="mini" border>
             <el-table-column label="图片" width="80">
               <template v-slot="scope">
-
                 <img
                   style="width:50px; height:50px; border-radius:3px"
-                  :src="'http://121.199.29.84:8090/'+scope.row.productPhoto"
-                  alt=""
+                  :src="'http://121.199.29.84:8888/'+scope.row.productPhoto"
+                  alt
                 >
-
               </template>
             </el-table-column>
             <el-table-column label="名称" prop="productName" width="120" />
             <el-table-column label="单价" prop="productPrice" width="60" />
             <el-table-column label="数量" prop="number" width="120" />
             <el-table-column label="介绍" prop="productIntroduce" />
-
           </el-table>
           <!-- /订单项表格 -->
         </template>
@@ -46,15 +41,12 @@
       <el-table-column label="员工" prop="employee.realname" width="60" />
       <el-table-column label="状态" prop="status" width="60" />
       <el-table-column label="地址">
-
         <template v-slot="scope">
-          <div>{{
-            scope.row.address.province + ' ' + scope.row.address.city + ' ' + scope.row.address.area + ' ' + scope.row.address.address
-          }}
+          <div>
+            {{ scope.row.address.province + ' ' + scope.row.address.city + ' ' + scope.row.address.area + ' ' + scope.row.address.address }}
           </div>
           <div>{{ scope.row.address.username }} {{ scope.row.address.telephone }}</div>
         </template>
-
       </el-table-column>
       <el-table-column label="操作" width="160" align="center">
         <template slot-scope="scope">
@@ -68,25 +60,14 @@
           <el-button v-if="scope.row.status==='已完成'" disabled type="success" size="mini">已完成</el-button>
           <el-button v-if="scope.row.status==='待服务'" disabled type="primary" size="mini">待服务</el-button>
           <el-button v-if="scope.row.status==='待确认'" disabled type="primary" size="mini">待确认</el-button>
-
         </template>
       </el-table-column>
     </el-table>
     <!-- 模态框 -->
     <el-dialog title="派单" :visible.sync="visible">
-      <el-radio v-for="e in employee" v-if="e.status==='已通过'" :key="e.id" v-model="employeeId" :label="e.id">
+      <el-radio v-for="e in employee" v-if="e.status==='启用'" :key="e.id" v-model="employeeId" :label="e.id">
         {{ e.realname }}
       </el-radio>
-
-      <el-radio
-        v-for="e in employee"
-        v-if="e.status==='启用'"
-        :key="e.id"
-        v-model="employeeId"
-        :label="e.id"
-      >{{ e.realname }}
-      </el-radio>
-
       <div slot="footer" class="dialog-footer">
         <el-button @click="close()">取消</el-button>
         <el-button type="primary" @click="submit()">确定</el-button>
@@ -108,8 +89,8 @@ export default {
       orders: [],
       employee: [],
       orderId: '',
-      visible: false,
-      employeeId: ''
+      employeeId: '',
+      visible: false
     }
   },
   watch: {
@@ -136,7 +117,7 @@ export default {
       if (param.status == 'all') {
         delete param.status
       }
-      get(url, param).then((response) => {
+      get(url, param).then(response => {
         this.orders = response.data
       })
     },
@@ -161,7 +142,6 @@ export default {
         orderId: this.orderId,
         employeeId: this.employeeId
       }
-
       const url = this.baseUrl + '/order/sendOrder'
       get(url, data).then(response => {
         this.$message({ type: 'success', message: response.message })
@@ -171,5 +151,4 @@ export default {
     }
   }
 }
-
 </script>
