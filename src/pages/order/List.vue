@@ -20,7 +20,7 @@
               <template v-slot="scope">
                 <img
                   style="width:50px; height:50px; border-radius:3px"
-                  :src="'http://121.199.29.84:8888/'+scope.row.productPhoto"
+                  :src="'http://121.199.29.84:5588/'+scope.row.productPhoto"
                   alt
                 >
               </template>

@@ -1,6 +1,7 @@
 <template>
   <div class="withdraw">
     <!-- 表格 -->
+    <!--{{customers}}-->
     <el-table :data="customers">
       <el-table-column prop="id" label="编号" width="150"/>
       <el-table-column prop="realname" label="用户名"/>
